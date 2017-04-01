@@ -17,5 +17,10 @@ class Piece {
         return this.square;
     }
 
+    /*
+    movePiece() {
+
+    }*/
+
 
 }

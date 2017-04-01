@@ -45,13 +45,12 @@ class Board {
             for (var row in this.squares[col]) {
                 currRow = row;
                 currSquare = currCol.concat(currRow);
-                //has the piece moved?
                 // check if space is empty
                 if (this.squares[col][row] == null) {
                     continue;
                 }
+                //has the piece moved?
                 else if (this.squares[col][row].getSquare() != currSquare) {
-                    console.log(this.squares[col][row].getSquare());
                     // Move the piece
                     this.updateSquare(this.squares[col][row].getSquare(), this.squares[col][row]);
                 }
@@ -64,3 +63,5 @@ var board = new Board();
 board.updateSquare("e5", board.squares["a"]["1"]);
 
 board.updateBoard();
+
+console.log(board.squares["e"]["5"]);
