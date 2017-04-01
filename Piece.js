@@ -17,10 +17,13 @@ class Piece {
         return this.square;
     }
 
-    /*
-    movePiece() {
-
-    }*/
+    movePiece(square) {
+        var col = square.charAt(0);
+        var row = square.charAt(1);
+        var newSquare = col.concat(row);
+        this.square = newSquare;
+        return;
+    }
 
 
 }
