@@ -13,7 +13,7 @@ class Board {
     }
 
     // get the piece that is on any square
-    getPiece() {
+    getPiece(square) {
         if (square === null) {
             return null;
         }
@@ -22,7 +22,7 @@ class Board {
         return this.squares[col][row];
     }
 
-    //
+    // move a piece to a new square
     updateSquare(endSquare, piece) {
         var startingSquare = piece.getSquare();
         var startCol = startingSquare.charAt(0);
@@ -36,6 +36,7 @@ class Board {
         return
     }
 
+    //scan board for pieces that may have moved, and update accordingly
     updateBoard() {
         var currSquare = null;
         var currCol = null;
