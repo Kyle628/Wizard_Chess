@@ -15,30 +15,6 @@ function init(){
 	drawBoard();
 }
 
-function drawGrid(){
-	for(i=0; i<columnCount; i++){
-		for(j=0; j<rowCount; j++){
-			var spaceX = (i*(spaceWidth))+spaceOffsetLeft;
-			var spaceY = (j*(spaceHeight))+spaceOffsetTop;
-
-			grid[i][j].x=spaceX;
-			grid[i][j].y=spaceY;
-
-			ctx.beginPath();
-			ctx.rect(spaceX,spaceY,spaceWidth, spaceHeight);
-			if((i+j)%2==0){
-				ctx.fillStyle="#000000";
-			}
-			else{
-				ctx.fillStyle="#afd6f7";
-			}
-			ctx.fill();
-			ctx.closePath();
-		}
-	}
-}
-
-
 function drawBoard(){
 	for(var col in board.squares){
 		for(var row in board.squares[col]){
