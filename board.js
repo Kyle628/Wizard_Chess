@@ -123,10 +123,3 @@ class Board {
         }
     }
 }
-
-var board = new Board();
-board.updateSquare("e5", board.squares["a"]["1"]);
-
-board.updateBoard();
-
-console.log(board.squares["e"]["5"]);
