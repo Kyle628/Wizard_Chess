@@ -32,15 +32,14 @@ var blackKing = 20;
 
 
 
-var letters=new Array('a','b','c','d','e','f','g','h');
-var numbers=new Array('1','2','3','4','5','6','7','8');
 
 var board=[];
+
 for(i=0; i<columnCount; i++){
 	board[i]=[];
 	for(j=0; j<rowCount; j++){
-		board[i][j]={x:0, y:0, bOcuupied:false, wOccupied:false,
-		spaceName:parseInt(i.toString().concat(j.toString())),
+		board[i][j]={x:0, y:0, bOccupied:false, wOccupied:false,
+		spaceName:i.toString().concat(j.toString()),
 		pieceId:empty};
 	}
 }
@@ -51,7 +50,6 @@ var pieces = [];
 
 function onmousedown(event){
 	dragging=true;
-	console.log(dragging);
 	if(event.clientX-55>0+spaceOffsetLeft&&event.clientX-55<spaceWidth+spaceOffsetLeft){
 		if(event.clientY-10>7*spaceHeight+spaceOffsetTop&&event.clientY-10<8*spaceHeight+spaceOffsetTop){
 			dragging07=true;
@@ -93,6 +91,7 @@ function init(){
 	canvas.onmouseup=onmouseup;
 	canvas.onmousemove=onmousemove;
 
+
 	pieces=[
 		new piece('w','r',board[0][0], 0),
 		new piece('w','kn',board[1][0], 1),
@@ -128,6 +127,18 @@ function init(){
 		new piece('b','p',board[7][6], 31)
 	];
 
+
+
+	for (var i=0; i < 32; i++) {
+		var col = parseInt(pieces[i].square.spaceName[0]);
+		var row = parseInt(pieces[i].square.spaceName[1]);
+		board[col][row].pieceId = pieces[i].pieceId;
+		pieces[i].drawPiece();
+	}
+
+
+
+	drawboard();
 	for (var i=0; i < 32; i++) {
 		pieces[i].drawPiece();
 	}
@@ -159,9 +170,6 @@ function drawboard(){
 
 			board[i][j].x=spaceX;
 			board[i][j].y=spaceY;
-			board[i][j].spaceName=letters[i]+numbers[j];
-
-			//console.log(board[i][j].spaceName);
 
 
 
@@ -177,6 +185,7 @@ function drawboard(){
 			ctx.closePath();
 		}
 	}
+	return;
 }
 
 function piece(color, piece, square, pieceId){
@@ -209,7 +218,7 @@ function piece(color, piece, square, pieceId){
 	}
 }
 
-// takes a piece object, and a two digit integer square id, returns true if move was made
+// takes a piece object, and a square id as a string, returns true if move was made
 function movePiece(pieceToMove, endSquare) {
 	var pieceType = pieceToMove.piece;
 	var wasMoveMade = false;
@@ -224,6 +233,10 @@ function movePiece(pieceToMove, endSquare) {
 }
 
 function movePawn(pieceToMove, endSquare) {
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
 	var wasMoveMade = false;
 	var isDoubleMove = checkIfDoubleMove(pieceToMove, endSquare)
 	var isSingleMove = checkIfSingleMove(pieceToMove, endSquare);
@@ -232,6 +245,7 @@ function movePawn(pieceToMove, endSquare) {
 		wasMoveMade = makeDoubleMove(pieceToMove, endSquare);
 		return wasMoveMade;
 	} else if (isSingleMove) {
+
 		wasMoveMade = makeSingleMove(pieceToMove, endSquare);
 		return wasMoveMade;
 	} else if (isCapture) {
@@ -266,10 +280,10 @@ function movePawn(pieceToMove, endSquare) {
 
 
 function checkIfLegalPawnCapture(pieceToMove, endSquare) {
-	startCol = parseInt(pieceToMove.square.spaceName.toString()[0]);
-	startRow = parseInt(pieceToMove.square.spaceName.toString()[1]);
-	endCol = parseInt(endSquare.spaceName.toString()[0]);
-	endRow = parseInt(endSquare.spaceName.toString()[1]);
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
 	if (pieceToMove.color == 'w') {
 		if (Math.abs(endCol - startCol) == 1) { // capture is one column over
 			if (endRow - startRow == 1) { // move is one space forward, diagonal, legal capture!!
@@ -288,17 +302,17 @@ function checkIfLegalPawnCapture(pieceToMove, endSquare) {
 
 }
 function checkIfPawnCapture(pieceToMove, endSquare) {
-	startCol = parseInt(pieceToMove.square.spaceName.toString()[0]);
-	startRow = parseInt(pieceToMove.square.spaceName.toString()[1]);
-	endCol = parseInt(endSquare.spaceName.toString()[0]);
-	endRow = parseInt(endSquare.spaceName.toString()[1]);
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
 
 	if (pieceToMove.color == 'w') {
-		if (board[endCol][endRow] == 'bOccupied') {
+		if (board[endCol][endRow].bOccupied == true) {
 			return true;
 		}
 	} else { // black pawn
-		if (board[endCol][endRow] == 'wOccupied') {
+		if (board[endCol][endRow].wOccupied == true) {
 			return true;
 		}
 	}
@@ -308,8 +322,10 @@ function checkIfPawnCapture(pieceToMove, endSquare) {
 }
 
 function makeSingleMove(pieceToMove, endSquare) {
-	endCol = parseInt(endSquare.spaceName.toString()[0]);
-	endRow = parseInt(endSquare.spaceName.toString()[1]);
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
 	if (pieceToMove.color == "w") {
 		// check for obstruction
 		if (board[endCol][endRow+1].wOccupied || board[endCol][endRow+1].bOccupied) {
@@ -317,15 +333,19 @@ function makeSingleMove(pieceToMove, endSquare) {
 		} else { // unoccupied, legal move
 			pieceToMove.square = board[endCol][endRow];
 			board[endCol][endRow].wOccupied = true;
+			board[endCol][endRow].pieceId = pieceToMove.pieceId;
+			board[startCol][startRow].pieceId = empty;
 			return true; // move was made successfully
 		}
 	} else { // black pawn
 		// check for obstruction
-		if (board[endCol][endRow+1].wOccupied || board[endCol][endRow+1].bOccupied) {
+		if (board[endCol][endRow-1].wOccupied || board[endCol][endRow-1].bOccupied) {
 			return false;
 		} else { // unoccupied, legal move
 			pieceToMove.square = board[endCol][endRow];
 			board[endCol][endRow].bOccupied = true;
+			board[endCol][endRow].pieceId = pieceToMove.pieceId;
+			board[startCol][startRow].pieceId = empty;
 			return true; // move was made successfully
 		}
 	}
@@ -334,17 +354,21 @@ function makeSingleMove(pieceToMove, endSquare) {
 // takes piece object, and square id. Mutates piece object to make move.
 // returns true if move was made
 function makeDoubleMove(pieceToMove, endSquare) {
-	endCol = parseInt(endSquare.spaceName.toString()[0]);
-	endRow = parseInt(endSquare.spaceName.toString()[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
 	if (!pieceToMove.hasMoved) { // piece has not moved
 		var isObstructed = isPawnDoubleMoveObstructed(pieceToMove, endSquare);
 		if (!isObstructed) {
 			pieceToMove.square = board[endCol][endRow];
-			if (pieceToMove.color = "w") {
+			if (pieceToMove.color == "w") {
 				board[endCol][endRow].wOccupied = true;
+				board[endCol][endRow].pieceId = pieceToMove.pieceId;
+				board[startCol][startRow].pieceId = empty;
 				return true; // move was made successfully
 			} else { // piece was black
 				board[endCol][endRow].bOccupied = true;
+				board[endCol][endRow].pieceId = pieceToMove.pieceId;
+				board[startCol][startRow].pieceId = empty;
 				return true; // move was made successfully
 			}
 		} else { // can't make move if there are pieces in the way
@@ -360,11 +384,11 @@ function makeDoubleMove(pieceToMove, endSquare) {
 
 
 function isPawnDoubleMoveObstructed(pieceToMove, endSquare) {
-	startCol = parseInt(pieceToMove.square.spaceName.toString()[0]);
-	startRow = parseInt(pieceToMove.square.spaceName.toString()[1]);
-	endCol = parseInt(endSquare.spaceName.toString()[0]);
-	endRow = parseInt(endSquare.spaceName.toString()[1]);
-	if (pieceToMove.color = 'w') {
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
+	if (pieceToMove.color == 'w') {
 		var isObstructed = false;
 		for (var i = startCol; i <= endCol; i++) {
 			if (board[i][endRow].wOccupied || board[i][endRow].bOccupied) {
@@ -385,47 +409,49 @@ function isPawnDoubleMoveObstructed(pieceToMove, endSquare) {
 }
 
 function checkIfDoubleMove(pieceToMove, endSquare) {
-	startCol = parseInt(pieceToMove.square.spaceName.toString()[0]);
-	startRow = parseInt(pieceToMove.square.spaceName.toString()[1]);
-	endCol = parseInt(endSquare.spaceName.toString()[0]);
-	endRow = parseInt(endSquare.spaceName.toString()[1]);
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
 	if (pieceToMove.color == 'w') {
 		if (endRow - startRow == 2) { // moves two squares forward
-			if (endRow == startRow) { // stays in original column
+			if (endCol == startCol) { // stays in original column
 				return true;
 			}
 		}
 	} else if (pieceToMove.color == 'b') {
 		if (startRow - endRow == 2) { // moves two squares forward
-			if (startRow == endRow) { // stays in original column
+			if (startCol== endCol) { // stays in original column
 				return true;
 			}
 		}
 	} else {
 		return false;
 	}
+	return false;
 }
 
 function checkIfSingleMove(pieceToMove, endSquare) {
-	startCol = parseInt(pieceToMove.square.spaceName.toString()[0]);
-	startRow = parseInt(pieceToMove.square.spaceName.toString()[1]);
-	endCol = parseInt(endSquare.spaceName.toString()[0]);
-	endRow = parseInt(endSquare.spaceName.toString()[1]);
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
 	if (pieceToMove.color == 'w') {
-		if (endRow - startRow == 1) { // moves two squares forward
-			if (endRow == startRow) { // stays in original column
+		if (endRow - startRow == 1) { // moves one square forward
+			if (endCol == startCol) { // stays in original column
 				return true;
 			}
 		}
 	} else if (pieceToMove.color == 'b') {
-		if (startRow - endRow == 1) { // moves two squares forward
-			if (startRow == endRow) { // stays in original column
+		if (startRow - endRow == 1) { // moves one square forward
+			if (startCol == endCol) { // stays in original column
 				return true;
 			}
 		}
 	} else {
 		return false;
 	}
+	return false;
 }
 /*
 function drawPieces(pieces){
