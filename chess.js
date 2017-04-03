@@ -8,13 +8,7 @@ var columnCount=8;
 var rowCount=8;
 var numPieces=32;
 
-var dragging=false;
-var dragging07=false;
-
 var pieces=[];
-
-var letters=new Array('a','b','c','d','e','f','g','h');
-var numbers=new Array('1','2','3','4','5','6','7','8');
 
 var board=[];
 for(i=0; i<columnCount; i++){
@@ -25,39 +19,42 @@ for(i=0; i<columnCount; i++){
 }
 
 function onmousedown(event){
-	dragging=true;
-	console.log(dragging);
-	if(event.clientX-55>0+spaceOffsetLeft&&event.clientX-55<spaceWidth+spaceOffsetLeft){
-		if(event.clientY-10>7*spaceHeight+spaceOffsetTop&&event.clientY-10<8*spaceHeight+spaceOffsetTop){
-			dragging07=true;
-		}
-	}
-	if(event.clientX-55>pieces[0].x && event.clientx-55<pieces[0].)
 
+	pieces.forEach(function(piece){
+		if(event.clientX-canvas.offsetLeft>piece.xCoord&&event.clientX-canvas.offsetLeft<piece.xCoord+16){
+			if(event.clientY-canvas.offsetTop>piece.yCoord&&event.clientY-canvas.offsetTop<piece.yCoord+16){
+				piece.dragging=true;
+				console.log(piece.dragging);
+			}
+		}
+	})
 }
 
 function onmouseup(event){
-	dragging=false;
+	pieces.forEach(function(piece){
+		piece.dragging=false;
+	})
 }
 
 function onmousemove(event){
-	if(dragging){
-		if(dragging07){
+	pieces.forEach(function(piece){
+		if(piece.dragging){
 			var dX = event.clientX-lastClientX;
 			var dY = event.clientY-lastClientY;
-			rook1.xCoord+=dX;
-			rook1.yCoord+=dY;
+			piece.xCoord+=dX;
+			piece.yCoord+=dY;
 			drawboard();
-
-			//should use 'foreach'
-			for(i=0; i<numPieces; i++){
-				pieces[i].drawPiece();
-			}
+			pieces.forEach(function(piece){
+				piece.drawPiece();
+			})
 		}
-	}
 
-	lastClientX = event.clientX;
-	lastClientY = event.clientY;
+
+	})
+	
+	lastClientX=event.clientX;
+	lastClientY=event.clientY;
+
 }
 
 function init(){
@@ -68,8 +65,6 @@ function init(){
 	canvas.onmousedown=onmousedown;
 	canvas.onmouseup=onmouseup;
 	canvas.onmousemove=onmousemove;
-
-
 
 
 	for(i=0; i<numPieces; i++){
@@ -87,6 +82,7 @@ function init(){
 		}
 		pieces[i].drawPiece();
 	}
+
 }
 
 function drawboard(){
@@ -98,9 +94,6 @@ function drawboard(){
 			board[i][j].x=spaceX;
 			board[i][j].y=spaceY;
 			board[i][j].spaceName=letters[i]+numbers[j];
-
-			//console.log(board[i][j].spaceName);
-
 
 
 			ctx.beginPath();
@@ -118,19 +111,19 @@ function drawboard(){
 }
 
 function piece(color, piece, square){
+	this.dragging=false;
 	this.color=color;
 	this.piece=piece;
 	this.square=square;
 	this.xCoord=square.x+(spaceWidth/2-8);
 	this.yCoord=square.y+(spaceHeight/2-8);
-	this.drawPiece = function(){
+	this.drawPiece=function(){
 		ctx.beginPath();
 		
 		ctx.rect(this.xCoord,this.yCoord,16,16);
 		ctx.fillStyle="#ffffff";
 		ctx.fill();
 		
-
 		/*
 		ctx.fillStyle = 'rgba(0,0,0,1)';
 		ctx.strokeStyle = "#F00";
@@ -141,18 +134,3 @@ function piece(color, piece, square){
 		ctx.closePath();
 	}
 }
-
-/*
-function drawPieces(pieces){
-	for(i=0;i<8;i++){
-		for(j=0;j<2;j++){
-			ctx.beginPath();
-			ctx.arc((i*spaceWidth)+spaceOffsetLeft+(spaceWidth/2),(j*spaceHeight)+spaceOffsetTop+(spaceHeight/2),15,0,2*Math.PI,false);
-			ctx.fillStyle='#ffffff';
-			ctx.fill();
-			ctx.closePath();
-		}
-	}
-
-}
-*/
