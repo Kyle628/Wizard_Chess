@@ -32,7 +32,10 @@ function onmousedown(event){
 
 function onmouseup(event){
 	pieces.forEach(function(piece){
-		piece.dragging=false;
+		if(piece.dragging){
+			centerPiece(piece);
+			piece.dragging=false;
+		}
 	})
 }
 
@@ -48,20 +51,33 @@ function onmousemove(event){
 				piece.drawPiece();
 			})
 		}
-
-
 	})
-	
 	lastClientX=event.clientX;
 	lastClientY=event.clientY;
+}
 
+function centerPiece(piece){
+	for(i=0; i<columnCount; i++){
+		for(j=0; j<rowCount; j++){
+			if(piece.xCoord+8>board[i][j].x && piece.xCoord+8<board[i][j].x+spaceWidth){
+				if(piece.yCoord+8>board[i][j].y && piece.yCoord+8<board[i][j].y+spaceHeight){
+					piece.xCoord=board[i][j].x+10;
+					piece.yCoord=board[i][j].y+10;
+				}
+
+			}
+		}
+	}
+	drawboard();
+	pieces.forEach(function(piece){
+		piece.drawPiece();
+	})
 }
 
 function init(){
 	canvas=document.getElementById('myCanvas');
 	ctx=canvas.getContext('2d');
 	drawboard();
-	//drawPieces();
 	canvas.onmousedown=onmousedown;
 	canvas.onmouseup=onmouseup;
 	canvas.onmousemove=onmousemove;
@@ -82,7 +98,6 @@ function init(){
 		}
 		pieces[i].drawPiece();
 	}
-
 }
 
 function drawboard(){
@@ -93,7 +108,6 @@ function drawboard(){
 
 			board[i][j].x=spaceX;
 			board[i][j].y=spaceY;
-			board[i][j].spaceName=letters[i]+numbers[j];
 
 
 			ctx.beginPath();
