@@ -17,47 +17,20 @@ var whiteRook2 = 7;
 var whiteKnight1 = 1;
 var whiteKnight2 = 6;
 var whiteBishop1 = 2;
-var whiteKnight2 = 5;
+var whiteBishop2 = 5;
 var whiteQueen = 3;
 var whiteKing = 4;
 
-var pieces=[
-	new piece('w','r',board[0][0], 0),
-	new piece('w','kn',board[1][0], 1),
-	new piece('w','b',board[2][0], 2),
-	new piece('w','q',board[3][0], 3),
-	new piece('w','k',board[4][0], 4),
-	new piece('w','b',board[5][0], 5),
-	new piece('w','kn',board[6][0], 6),
-	new piece('w','r',board[7][0], 7),
-	new piece('w','p',board[0][1], 8),
-	new piece('w','p',board[1][1], 9),
-	new piece('w','p',board[2][1], 10),
-	new piece('w','p',board[3][1], 11),
-	new piece('w','p',board[4][1], 12),
-	new piece('w','p',board[5][1], 13),
-	new piece('w','p',board[6][1], 14),
-	new piece('w','p',board[7][1], 15),
-	new piece('b','r',board[0][7], 16),
-	new piece('b','kn',board[1][7], 17),
-	new piece('b','b',board[2][7], 18),
-	new piece('b','q',board[3][7], 19),
-	new piece('b','k',board[4][7], 20),
-	new piece('b','b',board[5][7], 21),
-	new piece('b','kn',board[6][7], 22),
-	new piece('b','r',board[7][7], 23),
-	new piece('b','p',board[0][6], 25),
-	new piece('b','p',board[1][6], 26),
-	new piece('b','p',board[2][6], 27),
-	new piece('b','p',board[3][6], 28),
-	new piece('b','p',board[4][6], 29),
-	new piece('b','p',board[5][6], 30),
-	new piece('b','p',board[6][6], 31),
-	new piece('b','p',board[7][6], 32),
+var blackRook1 = 16;
+var blackRook2 = 23;
+var blackKnight1 = 17;
+var blackKnight2 = 22;
+var blackBishop1 = 18;
+var blackBishop2 = 21;
+var blackQueen = 19;
+var blackKing = 20;
 
 
-
-];
 
 var letters=new Array('a','b','c','d','e','f','g','h');
 var numbers=new Array('1','2','3','4','5','6','7','8');
@@ -71,6 +44,10 @@ for(i=0; i<columnCount; i++){
 		pieceId:empty};
 	}
 }
+
+var pieces = [];
+
+
 
 function onmousedown(event){
 	dragging=true;
@@ -116,7 +93,44 @@ function init(){
 	canvas.onmouseup=onmouseup;
 	canvas.onmousemove=onmousemove;
 
+	pieces=[
+		new piece('w','r',board[0][0], 0),
+		new piece('w','kn',board[1][0], 1),
+		new piece('w','b',board[2][0], 2),
+		new piece('w','q',board[3][0], 3),
+		new piece('w','k',board[4][0], 4),
+		new piece('w','b',board[5][0], 5),
+		new piece('w','kn',board[6][0], 6),
+		new piece('w','r',board[7][0], 7),
+		new piece('w','p',board[0][1], 8),
+		new piece('w','p',board[1][1], 9),
+		new piece('w','p',board[2][1], 10),
+		new piece('w','p',board[3][1], 11),
+		new piece('w','p',board[4][1], 12),
+		new piece('w','p',board[5][1], 13),
+		new piece('w','p',board[6][1], 14),
+		new piece('w','p',board[7][1], 15),
+		new piece('b','r',board[0][7], 16),
+		new piece('b','kn',board[1][7], 17),
+		new piece('b','b',board[2][7], 18),
+		new piece('b','q',board[3][7], 19),
+		new piece('b','k',board[4][7], 20),
+		new piece('b','b',board[5][7], 21),
+		new piece('b','kn',board[6][7], 22),
+		new piece('b','r',board[7][7], 23),
+		new piece('b','p',board[0][6], 24),
+		new piece('b','p',board[1][6], 25),
+		new piece('b','p',board[2][6], 26),
+		new piece('b','p',board[3][6], 27),
+		new piece('b','p',board[4][6], 28),
+		new piece('b','p',board[5][6], 29),
+		new piece('b','p',board[6][6], 30),
+		new piece('b','p',board[7][6], 31)
+	];
 
+	for (var i=0; i < 32; i++) {
+		pieces[i].drawPiece();
+	}
 
 
 	/*for(i=0; i<numPieces; i++){
