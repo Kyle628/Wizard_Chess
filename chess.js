@@ -97,7 +97,7 @@ function onmousemove(event){
 
 /*
 function centerPiece(piece, update){
-	
+
 	if(update){
 		for(i=0; i<columnCount; i++){
 			for(j=0; j<rowCount; j++){
@@ -119,7 +119,7 @@ function centerPiece(piece, update){
 */
 
 function centerPiece(piece, update){
-	
+
 	var space;
 	for(i=0; i<columnCount; i++){
 		for(j=0; j<rowCount; j++){
@@ -393,7 +393,7 @@ function makeSingleMove(pieceToMove, endSquare) {
 	endRow = parseInt(endSquare.spaceName[1]);
 	if (pieceToMove.color == "w") {
 		// check for obstruction
-		if (board[endCol][endRow+1].wOccupied || board[endCol][endRow+1].bOccupied) {
+		if (board[endCol][endRow].wOccupied || board[endCol][endRow].bOccupied) {
 			return false;
 		} else { // unoccupied, legal move
 			pieceToMove.square = board[endCol][endRow];
@@ -404,7 +404,7 @@ function makeSingleMove(pieceToMove, endSquare) {
 		}
 	} else { // black pawn
 		// check for obstruction
-		if (board[endCol][endRow-1].wOccupied || board[endCol][endRow-1].bOccupied) {
+		if (board[endCol][endRow].wOccupied || board[endCol][endRow].bOccupied) {
 			return false;
 		} else { // unoccupied, legal move
 			pieceToMove.square = board[endCol][endRow];
