@@ -31,7 +31,7 @@ var blackQueen = 19;
 var blackKing = 20;
 
 
-
+var pieces=[];
 
 var board=[];
 
@@ -49,44 +49,65 @@ var pieces = [];
 
 
 function onmousedown(event){
-	dragging=true;
-	if(event.clientX-55>0+spaceOffsetLeft&&event.clientX-55<spaceWidth+spaceOffsetLeft){
-		if(event.clientY-10>7*spaceHeight+spaceOffsetTop&&event.clientY-10<8*spaceHeight+spaceOffsetTop){
-			dragging07=true;
-		}
-	}
 
+	pieces.forEach(function(piece){
+		if(event.clientX-canvas.offsetLeft>piece.xCoord&&event.clientX-canvas.offsetLeft<piece.xCoord+16){
+			if(event.clientY-canvas.offsetTop>piece.yCoord&&event.clientY-canvas.offsetTop<piece.yCoord+16){
+				piece.dragging=true;
+				console.log(piece.dragging);
+			}
+		}
+	})
 }
 
 function onmouseup(event){
-	dragging=false;
+	pieces.forEach(function(piece){
+		if(piece.dragging){
+			centerPiece(piece);
+			piece.dragging=false;
+		}
+	})
 }
 
 function onmousemove(event){
-	if(dragging){
-		if(dragging07){
+	pieces.forEach(function(piece){
+		if(piece.dragging){
 			var dX = event.clientX-lastClientX;
 			var dY = event.clientY-lastClientY;
-			rook1.xCoord+=dX;
-			rook1.yCoord+=dY;
+			piece.xCoord+=dX;
+			piece.yCoord+=dY;
 			drawboard();
+			pieces.forEach(function(piece){
+				piece.drawPiece();
+			})
+		}
+	})
+	lastClientX=event.clientX;
+	lastClientY=event.clientY;
+}
 
-			//should use 'foreach'
-			for(i=0; i<numPieces; i++){
-				pieces[i].drawPiece();
+function centerPiece(piece){
+	for(i=0; i<columnCount; i++){
+		for(j=0; j<rowCount; j++){
+			if(piece.xCoord+8>board[i][j].x && piece.xCoord+8<board[i][j].x+spaceWidth){
+				if(piece.yCoord+8>board[i][j].y && piece.yCoord+8<board[i][j].y+spaceHeight){
+					piece.xCoord=board[i][j].x+10;
+					piece.yCoord=board[i][j].y+10;
+				}
+
 			}
 		}
 	}
-
-	lastClientX = event.clientX;
-	lastClientY = event.clientY;
+	drawboard();
+	pieces.forEach(function(piece){
+		piece.drawPiece();
+	})
 }
 
 function init(){
 	canvas=document.getElementById('myCanvas');
 	ctx=canvas.getContext('2d');
 	drawboard();
-	//drawPieces();
 	canvas.onmousedown=onmousedown;
 	canvas.onmouseup=onmouseup;
 	canvas.onmousemove=onmousemove;
@@ -143,8 +164,13 @@ function init(){
 		pieces[i].drawPiece();
 	}
 
+	movePiece(pieces[8], board[0][2]);
+
 
 	/*for(i=0; i<numPieces; i++){
+=======
+	for(i=0; i<numPieces; i++){
+>>>>>>> origin/Luke_Branch
 		if(i<8){
 			pieces[i]=new piece('b','r',board[i][0], i);
 		}
@@ -172,7 +198,6 @@ function drawboard(){
 			board[i][j].y=spaceY;
 
 
-
 			ctx.beginPath();
 			ctx.rect(spaceX,spaceY,spaceWidth, spaceHeight);
 			if((i+j)%2==0){
@@ -188,7 +213,9 @@ function drawboard(){
 	return;
 }
 
+
 function piece(color, piece, square, pieceId){
+	this.dragging=false;
 	this.color=color;
 	this.piece=piece;
 	this.square=square;
@@ -467,3 +494,19 @@ function drawPieces(pieces){
 
 }
 */
+	this.drawPiece=function(){
+		ctx.beginPath();
+
+		ctx.rect(this.xCoord,this.yCoord,16,16);
+		ctx.fillStyle="#ffffff";
+		ctx.fill();
+
+		/*
+		ctx.fillStyle = 'rgba(0,0,0,1)';
+		ctx.strokeStyle = "#F00";
+		ctx.font = "bold 15pt Arial";
+		ctx.globalCompositeOperation = 'destination-out';
+		ctx.fillText('R', this.xCoord, this.yCoord);
+		*/
+		ctx.closePath();
+	}
