@@ -192,6 +192,11 @@ function init(){
 		var col = parseInt(pieces[i].square.spaceName[0]);
 		var row = parseInt(pieces[i].square.spaceName[1]);
 		board[col][row].pieceId = pieces[i].pieceId;
+		if (pieces[i].color == 'w') {
+			board[col][row].wOccupied = true;
+		} else { // piece is black
+			board[col][row].bOccupied = true;
+		}
 		pieces[i].drawPiece();
 	}
 
@@ -262,25 +267,30 @@ function piece(color, piece, square, pieceId){
 	this.captured = false;
 	this.xCoord=square.x+(spaceWidth/2-8);
 	this.yCoord=square.y+(spaceHeight/2-8);
-	if (!this.captured) {
 		this.drawPiece = function(){
-			ctx.beginPath();
+			if (!this.captured) {
+				ctx.beginPath();
 
-			ctx.rect(this.xCoord,this.yCoord,16,16);
-			ctx.fillStyle="#ffffff";
-			ctx.fill();
+				ctx.rect(this.xCoord,this.yCoord,16,16);
+				if (this.color == 'w') {
+					ctx.fillStyle="#ffffff";
+				} else {
+					ctx.fillStyle="#b00b33";
+				}
+
+				ctx.fill();
 
 
-			/*
-			ctx.fillStyle = 'rgba(0,0,0,1)';
-			ctx.strokeStyle = "#F00";
-			ctx.font = "bold 15pt Arial";
-			ctx.globalCompositeOperation = 'destination-out';
-			ctx.fillText('R', this.xCoord, this.yCoord);
-			*/
-			ctx.closePath();
+				/*
+				ctx.fillStyle = 'rgba(0,0,0,1)';
+				ctx.strokeStyle = "#F00";
+				ctx.font = "bold 15pt Arial";
+				ctx.globalCompositeOperation = 'destination-out';
+				ctx.fillText('R', this.xCoord, this.yCoord);
+				*/
+				ctx.closePath();
+			}
 		}
-	}
 }
 
 // takes a piece object, and a square id as a string, returns true if move was made
@@ -307,15 +317,17 @@ function movePawn(pieceToMove, endSquare) {
 	var isSingleMove = checkIfSingleMove(pieceToMove, endSquare);
 	var isCapture = checkIfPawnCapture(pieceToMove, endSquare);
 	if (isDoubleMove) {
+		console.log("double");
 		wasMoveMade = makeDoubleMove(pieceToMove, endSquare);
 		return wasMoveMade;
 	} else if (isSingleMove) {
-
+		console.log("single");
 		wasMoveMade = makeSingleMove(pieceToMove, endSquare);
 		return wasMoveMade;
 	} else if (isCapture) {
 		var isCaptureLegal = checkIfLegalPawnCapture(pieceToMove, endSquare);
 		if (isCaptureLegal) { //make capture
+			console.log("legal capture");
 			capturedPiece = pieces[board[endCol][endRow].pieceId];
 			capturedPiece.captured = true;
 			pieceToMove.square = board[endCol][endRow];
@@ -345,6 +357,7 @@ function movePawn(pieceToMove, endSquare) {
 
 
 function checkIfLegalPawnCapture(pieceToMove, endSquare) {
+	console.log("checking if legal capture");
 	startCol = parseInt(pieceToMove.square.spaceName[0]);
 	startRow = parseInt(pieceToMove.square.spaceName[1]);
 	endCol = parseInt(endSquare.spaceName[0]);
@@ -367,17 +380,19 @@ function checkIfLegalPawnCapture(pieceToMove, endSquare) {
 
 }
 function checkIfPawnCapture(pieceToMove, endSquare) {
+	console.log("checking if pawn capture");
 	startCol = parseInt(pieceToMove.square.spaceName[0]);
 	startRow = parseInt(pieceToMove.square.spaceName[1]);
 	endCol = parseInt(endSquare.spaceName[0]);
 	endRow = parseInt(endSquare.spaceName[1]);
 
 	if (pieceToMove.color == 'w') {
-		if (board[endCol][endRow].bOccupied == true) {
+		if (board[endCol][endRow].bOccupied) {
 			return true;
 		}
 	} else { // black pawn
-		if (board[endCol][endRow].wOccupied == true) {
+		console.log("black piece");
+		if (board[endCol][endRow].wOccupied) {
 			return true;
 		}
 	}
