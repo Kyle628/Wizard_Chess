@@ -326,6 +326,7 @@ function movePawn(pieceToMove, endSquare) {
 		return wasMoveMade;
 	} else if (isCapture) {
 		var isCaptureLegal = checkIfLegalPawnCapture(pieceToMove, endSquare);
+		console.log(isCaptureLegal);
 		if (isCaptureLegal) { //make capture
 			console.log("legal capture");
 			capturedPiece = pieces[board[endCol][endRow].pieceId];
@@ -363,8 +364,11 @@ function checkIfLegalPawnCapture(pieceToMove, endSquare) {
 	endCol = parseInt(endSquare.spaceName[0]);
 	endRow = parseInt(endSquare.spaceName[1]);
 	if (pieceToMove.color == 'w') {
+		console.log("white piece")
 		if (Math.abs(endCol - startCol) == 1) { // capture is one column over
+		console.log("one column over");
 			if (endRow - startRow == 1) { // move is one space forward, diagonal, legal capture!!
+				console.log("one column forward");
 				return true;
 			}
 
@@ -391,7 +395,6 @@ function checkIfPawnCapture(pieceToMove, endSquare) {
 			return true;
 		}
 	} else { // black pawn
-		console.log("black piece");
 		if (board[endCol][endRow].wOccupied) {
 			return true;
 		}
