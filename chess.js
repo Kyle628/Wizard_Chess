@@ -44,7 +44,6 @@ for(i=0; i<columnCount; i++){
 	}
 }
 
-var pieces = [];
 
 
 
