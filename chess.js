@@ -62,7 +62,17 @@ function onmousedown(event){
 function onmouseup(event){
 	pieces.forEach(function(piece){
 		if(piece.dragging){
-			centerPiece(piece);
+			if(movePiece(piece, centerPiece(piece,false))){
+				centerPiece(piece,true);
+			}
+			else{
+				piece.xCoord=piece.square.x+10;
+				piece.yCoord=piece.square.y+10;
+				drawboard();
+				pieces.forEach(function(piece){
+					piece.drawPiece();
+				})
+			}
 			piece.dragging=false;
 		}
 	})
@@ -85,22 +95,51 @@ function onmousemove(event){
 	lastClientY=event.clientY;
 }
 
-function centerPiece(piece){
+/*
+function centerPiece(piece, update){
+	
+	if(update){
+		for(i=0; i<columnCount; i++){
+			for(j=0; j<rowCount; j++){
+				if(piece.xCoord+8>board[i][j].x && piece.xCoord+8<board[i][j].x+spaceWidth){
+					if(piece.yCoord+8>board[i][j].y && piece.yCoord+8<board[i][j].y+spaceHeight){
+						piece.xCoord=board[i][j].x+10;
+						piece.yCoord=board[i][j].y+10;
+					}
+
+				}
+			}
+		}
+		drawboard();
+		pieces.forEach(function(piece){
+			piece.drawPiece();
+		})
+	}
+}
+*/
+
+function centerPiece(piece, update){
+	
+	var space;
 	for(i=0; i<columnCount; i++){
 		for(j=0; j<rowCount; j++){
 			if(piece.xCoord+8>board[i][j].x && piece.xCoord+8<board[i][j].x+spaceWidth){
 				if(piece.yCoord+8>board[i][j].y && piece.yCoord+8<board[i][j].y+spaceHeight){
-					piece.xCoord=board[i][j].x+10;
-					piece.yCoord=board[i][j].y+10;
+					space = board[i][j];
 				}
-
 			}
 		}
 	}
-	drawboard();
-	pieces.forEach(function(piece){
-		piece.drawPiece();
-	})
+	if(update){
+		piece.xCoord=space.x+10;
+		piece.yCoord=space.y+10;
+
+		drawboard();
+		pieces.forEach(function(piece){
+			piece.drawPiece();
+		})
+	}
+	return space;
 }
 
 function init(){
