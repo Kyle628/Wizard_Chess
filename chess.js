@@ -8,6 +8,8 @@ var columnCount=8;
 var rowCount=8;
 var numPieces=32;
 var empty = 69;
+var moveNum = 0;
+var numCaptured = 0;
 
 var dragging=false;
 var dragging07=false;
@@ -264,31 +266,32 @@ function piece(color, piece, square, pieceId){
 	this.moveCount=0;
 	this.pieceId = pieceId;
 	this.captured = false;
+	this.firstMove;
 	this.xCoord=square.x+(spaceWidth/2-8);
 	this.yCoord=square.y+(spaceHeight/2-8);
 		this.drawPiece = function(){
-			if (!this.captured) {
-				ctx.beginPath();
 
-				ctx.rect(this.xCoord,this.yCoord,16,16);
-				if (this.color == 'w') {
-					ctx.fillStyle="#ffffff";
-				} else {
-					ctx.fillStyle="#636262";
-				}
+			ctx.beginPath();
 
-				ctx.fill();
-
-
-				/*
-				ctx.fillStyle = 'rgba(0,0,0,1)';
-				ctx.strokeStyle = "#F00";
-				ctx.font = "bold 15pt Arial";
-				ctx.globalCompositeOperation = 'destination-out';
-				ctx.fillText('R', this.xCoord, this.yCoord);
-				*/
-				ctx.closePath();
+			ctx.rect(this.xCoord,this.yCoord,16,16);
+			if (this.color == 'w') {
+				ctx.fillStyle="#ffffff";
+			} else {
+				ctx.fillStyle="#636262";
 			}
+
+			ctx.fill();
+
+
+			/*
+			ctx.fillStyle = 'rgba(0,0,0,1)';
+			ctx.strokeStyle = "#F00";
+			ctx.font = "bold 15pt Arial";
+			ctx.globalCompositeOperation = 'destination-out';
+			ctx.fillText('R', this.xCoord, this.yCoord);
+			*/
+			ctx.closePath();
+
 		}
 }
 
@@ -298,6 +301,10 @@ function movePiece(pieceToMove, endSquare) {
 	var wasMoveMade = false;
 	if (pieceType == "p") {
 		wasMoveMade = movePawn(pieceToMove, endSquare);
+		console.log(wasMoveMade);
+		if (wasMoveMade) {
+			moveNum += 1;
+		}
 		console.log(board[4][3]);
 		return wasMoveMade;
 	} else {
@@ -324,7 +331,10 @@ function movePawn(pieceToMove, endSquare) {
 	} else if (isSingleMove) {
 		console.log("single");
 		wasMoveMade = makeSingleMove(pieceToMove, endSquare);
-		if (wasMoveMade) { pieceToMove.moveCount += 1;}
+		if (wasMoveMade) {
+			pieceToMove.moveCount += 1;
+		}
+		console.log(wasMoveMade);
 		return wasMoveMade;
 	} else if (isCapture) {
 		var isCaptureLegal = checkIfLegalPawnCapture(pieceToMove, endSquare);
@@ -363,7 +373,11 @@ function makeEnPassantCapture(pieceToMove, endSquare) {
 	}
 
 	capturedPiece.captured = true;
+	numCaptured += 1;
+	capturedPiece.xCoord = 0;
+	capturedPiece.yCoord = 20*numCaptured;
 	pieceToMove.square = board[endCol][endRow];
+	console.log(endCol, endRow);
 	board[endCol][endRow].pieceId = pieceToMove.pieceId;
 	board[startCol][startRow].pieceId = empty;
 	board[startCol][startRow].wOccupied = false;
@@ -389,6 +403,9 @@ function makeCapture(pieceToMove, endSquare) {
 
 	capturedPiece = pieces[board[endCol][endRow].pieceId];
 	capturedPiece.captured = true;
+	numCaptured += 1;
+	capturedPiece.xCoord = 0;
+	capturedPiece.yCoord = 20*numCaptured;
 	pieceToMove.square = board[endCol][endRow];
 	board[endCol][endRow].pieceId = pieceToMove.pieceId;
 	board[startCol][startRow].pieceId = empty;
@@ -464,12 +481,14 @@ function isEnPassant (pieceToMove, endSquare) {
 		if (startRow == 4) {
 			if (typeof pieces[board[startCol+1][startRow].pieceId] != "undefined") {
 				if (pieces[board[startCol+1][startRow].pieceId].moveCount == 1
+					&& moveNum - pieces[board[startCol+1][startRow].pieceId].firstMove == 1
 					&& pieces[board[startCol+1][startRow].pieceId].piece == "p") {
 						return true;
 					}
 			}
 			if (typeof pieces[board[startCol-1][startRow].pieceId] != "undefined") {
 				if (pieces[board[startCol-1][startRow].pieceId].moveCount == 1
+					&& moveNum - pieces[board[startCol-1][startRow].pieceId].firstMove == 1
 					&& pieces[board[startCol-1][startRow].pieceId].piece == "p") {
 						return true;
 					}
@@ -480,12 +499,14 @@ function isEnPassant (pieceToMove, endSquare) {
 			console.log("start row", startRow);
 			if (typeof pieces[board[startCol+1][startRow].pieceId] != "undefined") {
 				if (pieces[board[startCol+1][startRow].pieceId].moveCount == 1
+					&& moveNum - pieces[board[startCol+1][startRow].pieceId].firstMove == 1
 					&& pieces[board[startCol+1][startRow].pieceId].piece == "p") {
 						return true;
 					}
 			}
 			if (typeof pieces[board[startCol-1][startRow].pieceId] != "undefined") {
 				if (pieces[board[startCol-1][startRow].pieceId].moveCount == 1
+					&& moveNum - pieces[board[startCol-1][startRow].pieceId].firstMove == 1
 					&& pieces[board[startCol-1][startRow].pieceId].piece == "p") {
 						return true;
 					}
@@ -519,6 +540,8 @@ function makeSingleMove(pieceToMove, endSquare) {
 			return false;
 		} else { // unoccupied, legal move
 			pieceToMove.square = board[endCol][endRow];
+			console.log("changing bOccupied");
+			console.log(board[endCol][endRow].pieceId)
 			board[endCol][endRow].bOccupied = true;
 			board[endCol][endRow].pieceId = pieceToMove.pieceId;
 			board[startCol][startRow].bOccupied = false;
@@ -526,6 +549,7 @@ function makeSingleMove(pieceToMove, endSquare) {
 			return true; // move was made successfully
 		}
 	}
+	return false;
 }
 
 // takes piece object, and square id. Mutates piece object to make move.
@@ -542,12 +566,14 @@ function makeDoubleMove(pieceToMove, endSquare) {
 				board[endCol][endRow].pieceId = pieceToMove.pieceId;
 				board[startCol][startRow].pieceId = empty;
 				board[startCol][startRow].wOccupied = false;
+				pieceToMove.firstMove = moveNum;
 				return true; // move was made successfully
 			} else { // piece was black
 				board[endCol][endRow].bOccupied = true;
 				board[endCol][endRow].pieceId = pieceToMove.pieceId;
 				board[startCol][startRow].pieceId = empty;
 				board[startCol][startRow].bOccupied = false;
+				pieceToMove.firstMove = moveNum;
 				return true; // move was made successfully
 			}
 		} else { // can't make move if there are pieces in the way
