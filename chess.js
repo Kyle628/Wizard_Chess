@@ -207,7 +207,6 @@ function init(){
 		pieces[i].drawPiece();
 	}
 
-	movePiece(pieces[8], board[0][2]);
 
 
 	/*for(i=0; i<numPieces; i++){
@@ -367,6 +366,8 @@ function checkIfLegalPawnCapture(pieceToMove, endSquare) {
 		console.log("white piece")
 		if (Math.abs(endCol - startCol) == 1) { // capture is one column over
 		console.log("one column over");
+		console.log(startRow)
+		console.log(pieceToMove.pieceId);
 			if (endRow - startRow == 1) { // move is one space forward, diagonal, legal capture!!
 				console.log("one column forward");
 				return true;
@@ -384,7 +385,6 @@ function checkIfLegalPawnCapture(pieceToMove, endSquare) {
 
 }
 function checkIfPawnCapture(pieceToMove, endSquare) {
-	console.log("checking if pawn capture");
 	startCol = parseInt(pieceToMove.square.spaceName[0]);
 	startRow = parseInt(pieceToMove.square.spaceName[1]);
 	endCol = parseInt(endSquare.spaceName[0]);
@@ -412,11 +412,13 @@ function makeSingleMove(pieceToMove, endSquare) {
 	if (pieceToMove.color == "w") {
 		// check for obstruction
 		if (board[endCol][endRow].wOccupied || board[endCol][endRow].bOccupied) {
+			console.log(board[endCol][endRow].bOccupied);
 			return false;
 		} else { // unoccupied, legal move
 			pieceToMove.square = board[endCol][endRow];
 			board[endCol][endRow].wOccupied = true;
 			board[endCol][endRow].pieceId = pieceToMove.pieceId;
+			board[startCol][startRow].wOccupied = false;
 			board[startCol][startRow].pieceId = empty;
 			return true; // move was made successfully
 		}
@@ -428,6 +430,7 @@ function makeSingleMove(pieceToMove, endSquare) {
 			pieceToMove.square = board[endCol][endRow];
 			board[endCol][endRow].bOccupied = true;
 			board[endCol][endRow].pieceId = pieceToMove.pieceId;
+			board[startCol][startRow].bOccupied = false;
 			board[startCol][startRow].pieceId = empty;
 			return true; // move was made successfully
 		}
@@ -447,11 +450,13 @@ function makeDoubleMove(pieceToMove, endSquare) {
 				board[endCol][endRow].wOccupied = true;
 				board[endCol][endRow].pieceId = pieceToMove.pieceId;
 				board[startCol][startRow].pieceId = empty;
+				board[startCol][startRow].wOccupied = false;
 				return true; // move was made successfully
 			} else { // piece was black
 				board[endCol][endRow].bOccupied = true;
 				board[endCol][endRow].pieceId = pieceToMove.pieceId;
 				board[startCol][startRow].pieceId = empty;
+				board[startCol][startRow].bOccupied = false;
 				return true; // move was made successfully
 			}
 		} else { // can't make move if there are pieces in the way
