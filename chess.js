@@ -53,7 +53,6 @@ function onmousedown(event){
 		if(event.clientX-canvas.offsetLeft>piece.xCoord&&event.clientX-canvas.offsetLeft<piece.xCoord+16){
 			if(event.clientY-canvas.offsetTop>piece.yCoord&&event.clientY-canvas.offsetTop<piece.yCoord+16){
 				piece.dragging=true;
-				console.log(piece.dragging);
 			}
 		}
 	})
@@ -209,6 +208,7 @@ function init(){
 
 
 
+
 	/*for(i=0; i<numPieces; i++){
 =======
 	for(i=0; i<numPieces; i++){
@@ -261,7 +261,7 @@ function piece(color, piece, square, pieceId){
 	this.color=color;
 	this.piece=piece;
 	this.square=square;
-	this.hasMoved=false;
+	this.moveCount=0;
 	this.pieceId = pieceId;
 	this.captured = false;
 	this.xCoord=square.x+(spaceWidth/2-8);
@@ -298,6 +298,7 @@ function movePiece(pieceToMove, endSquare) {
 	var wasMoveMade = false;
 	if (pieceType == "p") {
 		wasMoveMade = movePawn(pieceToMove, endSquare);
+		console.log(board[4][3]);
 		return wasMoveMade;
 	} else {
 		//some other piece type
@@ -318,41 +319,89 @@ function movePawn(pieceToMove, endSquare) {
 	if (isDoubleMove) {
 		console.log("double");
 		wasMoveMade = makeDoubleMove(pieceToMove, endSquare);
+		if (wasMoveMade) { pieceToMove.moveCount += 1;}
 		return wasMoveMade;
 	} else if (isSingleMove) {
 		console.log("single");
 		wasMoveMade = makeSingleMove(pieceToMove, endSquare);
+		if (wasMoveMade) { pieceToMove.moveCount += 1;}
 		return wasMoveMade;
 	} else if (isCapture) {
 		var isCaptureLegal = checkIfLegalPawnCapture(pieceToMove, endSquare);
 		console.log(isCaptureLegal);
 		if (isCaptureLegal) { //make capture
-			console.log("legal capture");
-			capturedPiece = pieces[board[endCol][endRow].pieceId];
-			capturedPiece.captured = true;
-			pieceToMove.square = board[endCol][endRow];
-			board[endCol][endRow].pieceId = pieceToMove.pieceId;
-			board[startCol][startRow].pieceId = empty;
-			board[startCol][startRow].wOccupied = false;
-			board[startCol][startRow].bOccupied = false;
-			if (pieceToMove.color == 'w') {
-				board[endCol][endRow].wOccupied = true;
-				board[endCol][endRow].bOccupied = false;
-			} else {
-				board[endCol][endRow].bOccupied = true;
-				board[endCol][endRow].wOccupied = false;
-			}
-			return true; // move and capture was made
-
-
-		} else {
-			return false; // move was not made
+			makeCapture(pieceToMove, endSquare);
+			return true;
 		}
 	}
-	else {
+	else if (isEnPassant(pieceToMove, endSquare)){
+		makeEnPassantCapture(pieceToMove, endSquare);
+
+	} else {
 		// this cannot be a pawn move by process of elimination
 		return false;
 	}
+}
+
+function makeEnPassantCapture(pieceToMove, endSquare) {
+	console.log("making en capture");
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
+
+	if (pieceToMove.color == 'w') {
+		capturedPiece = pieces[board[endCol][endRow-1].pieceId]
+		board[endCol][endRow-1].pieceId = empty;
+		board[endCol][endRow-1].wOccupied = false;
+		board[endCol][endRow-1].bOccupied = false;
+	} else { // black pawn making the capture
+		capturedPiece = pieces[board[endCol][endRow+1].pieceId]
+		board[endCol][endRow+1].pieceId = empty;
+		board[endCol][endRow+1].wOccupied = false;
+		board[endCol][endRow+1].bOccupied = false;
+	}
+
+	capturedPiece.captured = true;
+	pieceToMove.square = board[endCol][endRow];
+	board[endCol][endRow].pieceId = pieceToMove.pieceId;
+	board[startCol][startRow].pieceId = empty;
+	board[startCol][startRow].wOccupied = false;
+	board[startCol][startRow].bOccupied = false;
+
+
+	if (pieceToMove.color == 'w') {
+		board[endCol][endRow].wOccupied = true;
+		board[endCol][endRow].bOccupied = false;
+	} else {
+		console.log("getting called");
+		board[endCol][endRow].bOccupied = true;
+		board[endCol][endRow].wOccupied = false;
+	}
+	pieceToMove.moveCount += 1
+}
+// should be generic enough for all piece types
+function makeCapture(pieceToMove, endSquare) {
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
+
+	capturedPiece = pieces[board[endCol][endRow].pieceId];
+	capturedPiece.captured = true;
+	pieceToMove.square = board[endCol][endRow];
+	board[endCol][endRow].pieceId = pieceToMove.pieceId;
+	board[startCol][startRow].pieceId = empty;
+	board[startCol][startRow].wOccupied = false;
+	board[startCol][startRow].bOccupied = false;
+	if (pieceToMove.color == 'w') {
+		board[endCol][endRow].wOccupied = true;
+		board[endCol][endRow].bOccupied = false;
+	} else {
+		board[endCol][endRow].bOccupied = true;
+		board[endCol][endRow].wOccupied = false;
+	}
+	pieceToMove.moveCount += 1
 }
 
 
@@ -404,6 +453,48 @@ function checkIfPawnCapture(pieceToMove, endSquare) {
 
 }
 
+function isEnPassant (pieceToMove, endSquare) {
+	console.log("checking for en");
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
+
+	if (pieceToMove.color == 'w') {
+		if (startRow == 4) {
+			if (typeof pieces[board[startCol+1][startRow].pieceId] != "undefined") {
+				if (pieces[board[startCol+1][startRow].pieceId].moveCount == 1
+					&& pieces[board[startCol+1][startRow].pieceId].piece == "p") {
+						return true;
+					}
+			}
+			if (typeof pieces[board[startCol-1][startRow].pieceId] != "undefined") {
+				if (pieces[board[startCol-1][startRow].pieceId].moveCount == 1
+					&& pieces[board[startCol-1][startRow].pieceId].piece == "p") {
+						return true;
+					}
+			}
+		}
+	} else { //black pawn moving
+		if (startRow == 3) {
+			console.log("start row", startRow);
+			if (typeof pieces[board[startCol+1][startRow].pieceId] != "undefined") {
+				if (pieces[board[startCol+1][startRow].pieceId].moveCount == 1
+					&& pieces[board[startCol+1][startRow].pieceId].piece == "p") {
+						return true;
+					}
+			}
+			if (typeof pieces[board[startCol-1][startRow].pieceId] != "undefined") {
+				if (pieces[board[startCol-1][startRow].pieceId].moveCount == 1
+					&& pieces[board[startCol-1][startRow].pieceId].piece == "p") {
+						return true;
+					}
+			}
+		}
+	}
+	return false;
+}
+
 function makeSingleMove(pieceToMove, endSquare) {
 	startCol = parseInt(pieceToMove.square.spaceName[0]);
 	startRow = parseInt(pieceToMove.square.spaceName[1]);
@@ -412,7 +503,7 @@ function makeSingleMove(pieceToMove, endSquare) {
 	if (pieceToMove.color == "w") {
 		// check for obstruction
 		if (board[endCol][endRow].wOccupied || board[endCol][endRow].bOccupied) {
-			console.log(board[endCol][endRow].bOccupied);
+
 			return false;
 		} else { // unoccupied, legal move
 			pieceToMove.square = board[endCol][endRow];
@@ -442,7 +533,7 @@ function makeSingleMove(pieceToMove, endSquare) {
 function makeDoubleMove(pieceToMove, endSquare) {
 	endCol = parseInt(endSquare.spaceName[0]);
 	endRow = parseInt(endSquare.spaceName[1]);
-	if (!pieceToMove.hasMoved) { // piece has not moved
+	if (pieceToMove.moveCount == 0) { // piece has not moved
 		var isObstructed = isPawnDoubleMoveObstructed(pieceToMove, endSquare);
 		if (!isObstructed) {
 			pieceToMove.square = board[endCol][endRow];
