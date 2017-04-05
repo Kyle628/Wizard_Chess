@@ -274,7 +274,7 @@ function piece(color, piece, square, pieceId){
 				if (this.color == 'w') {
 					ctx.fillStyle="#ffffff";
 				} else {
-					ctx.fillStyle="#b00b33";
+					ctx.fillStyle="#636262";
 				}
 
 				ctx.fill();
