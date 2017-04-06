@@ -245,10 +245,10 @@ function drawboard(){
 			ctx.beginPath();
 			ctx.rect(spaceX,spaceY,spaceWidth, spaceHeight);
 			if((i+j)%2==0){
-				ctx.fillStyle='#000000';
+				ctx.fillStyle='#723e03'; // dark square
 			}
 			else{
-				ctx.fillStyle='#afd6f7';
+				ctx.fillStyle='#f9b15e'; // light square
 			}
 			ctx.fill();
 			ctx.closePath();
@@ -270,7 +270,42 @@ function piece(color, piece, square, pieceId){
 	this.xCoord=square.x+(spaceWidth/2-8);
 	this.yCoord=square.y+(spaceHeight/2-8);
 		this.drawPiece = function(){
+			if (this.color == 'w') {
+				// need to get rid of these magic numbers don't really know what i am doing
+				if (this.piece == 'p') {
+					loadImage("img/whitepawn.png", this.xCoord-4, this.yCoord-3);
+				} else if (this.piece == 'b') {
+					loadImage("img/whitebishop.png", this.xCoord-4, this.yCoord-3);
+				} else if (this.piece == 'kn') {
+					loadImage("img/whiteknight.png", this.xCoord-4, this.yCoord-3);
+				} else if (this.piece == 'r') {
+					loadImage("img/whiterook.png", this.xCoord-4, this.yCoord-3);
+				} else if (this.piece == 'k') {
+					loadImage("img/whiteking.png", this.xCoord-4, this.yCoord-3);
+				} else if (this.piece == 'q') {
+					loadImage("img/whitequeen.png", this.xCoord-4, this.yCoord-3);
+				}
+			} else if (this.color == 'b') { // black piece
+				// need to get rid of these magic numbers don't really know what i am doing
+				if (this.piece == 'p') {
+					loadImage("img/blackpawn.png", this.xCoord-4, this.yCoord-3);
+				} else if (this.piece == 'b') {
+					loadImage("img/blackbishop.png", this.xCoord-4, this.yCoord-3);
+				} else if (this.piece == 'kn') {
+					loadImage("img/blackknight.png", this.xCoord-4, this.yCoord-3);
+				} else if (this.piece == 'r') {
+					loadImage("img/blackrook.png", this.xCoord-4, this.yCoord-3);
+				} else if (this.piece == 'k') {
+					loadImage("img/blackking.png", this.xCoord-4, this.yCoord-3);
+				} else if (this.piece == 'q') {
+					loadImage("img/blackqueen.png", this.xCoord-4, this.yCoord-3);
+				}
+			} else {
+				;
+			}
 
+
+			/*
 			ctx.beginPath();
 
 			ctx.rect(this.xCoord,this.yCoord,16,16);
@@ -290,9 +325,21 @@ function piece(color, piece, square, pieceId){
 			ctx.globalCompositeOperation = 'destination-out';
 			ctx.fillText('R', this.xCoord, this.yCoord);
 			*/
-			ctx.closePath();
+			//ctx.closePath();
+
 
 		}
+}
+
+function loadImage( src, x, y) {
+
+    var imageObj = new Image();
+    imageObj.src = src;
+    imageObj.onload = function() {
+		ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(imageObj, x, y, 25, 25);
+    };
+
 }
 
 // takes a piece object, and a square id as a string, returns true if move was made
