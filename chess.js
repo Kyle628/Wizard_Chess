@@ -211,26 +211,13 @@ function init(){
 
 
 
-/*drawboard();
 setTimeout(function(){
 	for (var i=0; i < 32; i++) {
 		pieces[i].drawPiece();
 	}
-}, 50);*/
+}, 50);
 
-var promise = new Promise(function(resolve) {
-	var done = drawboard();
 
-	if(done) {
-		resolve();
-	}
-});
-
-promise.then(function() {
-	for (var i=0; i < 32; i++) {
-		pieces[i].drawPiece();
-	}
-});
 
 
 
@@ -298,31 +285,6 @@ function drawboard(){
 			this.yCoord=square.y+(spaceHeight/2-8);
 				this.drawPiece = function(){
 					ctx.drawImage(this.sprite, this.xCoord-4, this.yCoord-3, 25, 25);
-
-
-					/*
-					ctx.beginPath();
-
-					ctx.rect(this.xCoord,this.yCoord,16,16);
-					if (this.color == 'w') {
-						ctx.fillStyle="#ffffff";
-					} else {
-						ctx.fillStyle="#636262";
-					}
-
-					ctx.fill();
-
-
-					/*
-					ctx.fillStyle = 'rgba(0,0,0,1)';
-					ctx.strokeStyle = "#F00";
-					ctx.font = "bold 15pt Arial";
-					ctx.globalCompositeOperation = 'destination-out';
-					ctx.fillText('R', this.xCoord, this.yCoord);
-					*/
-					//ctx.closePath();
-
-
 				}
 		}
 
@@ -353,18 +315,58 @@ function movePiece(pieceToMove, endSquare) {
 	var wasMoveMade = false;
 	if (pieceType == "p") {
 		wasMoveMade = movePawn(pieceToMove, endSquare);
-		console.log(wasMoveMade);
 		if (wasMoveMade) {
 			moveNum += 1;
 		}
-		console.log(board[4][3]);
 		return wasMoveMade;
-	} else {
+	} else if (pieceType == "kn") {
+		wasMoveMade = moveKnight(pieceToMove, endSquare);
+		if (wasMoveMade) {
+			moveNum += 1;
+		}
+		return wasMoveMade;
+	}
+	else {
 		//some other piece type
 		return false;
 	}
 
 }
+
+function moveKnight(pieceToMove, endSquare) {
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
+	var wasMoveMade = false;
+	if (Math.abs(endCol - startCol) == 1 && Math.abs(endRow - startRow) == 2
+		|| Math.abs(endCol - startCol) == 2 && Math.abs(endRow - startRow) == 1
+	) { // legal
+		var pieceAtEndSquare = pieces[board[endCol][endRow].pieceId];
+		if (board[endCol][endRow].pieceId == empty) {
+			pieceToMove.square = board[endCol][endRow];
+			board[endCol][endRow].pieceId = pieceToMove.pieceId;
+			board[startCol][startRow].pieceId = empty;
+			if (pieceToMove.color == 'w') {
+				board[endCol][endRow].wOccupied = true;
+				board[startCol][startRow].wOccupied = false;
+			} else {
+				board[endCol][endRow].bOccupied = true;
+				board[startCol][startRow].bOccupied = false;
+			}
+			return true; // move was made successfully
+		} else if (pieceToMove.color == pieceAtEndSquare.color) { // space is occupied by friendly
+			return false;
+		} else if (pieceToMove.color != pieceAtEndSquare.color) { // legal capture
+			makeCapture(pieceToMove, endSquare);
+			return true;
+		} else { // move is not a valid knight move
+			return false;
+		}
+	}
+	return false;
+}
+
 
 function movePawn(pieceToMove, endSquare) {
 	startCol = parseInt(pieceToMove.square.spaceName[0]);
@@ -374,7 +376,7 @@ function movePawn(pieceToMove, endSquare) {
 	var wasMoveMade = false;
 	var isDoubleMove = checkIfDoubleMove(pieceToMove, endSquare)
 	var isSingleMove = checkIfSingleMove(pieceToMove, endSquare);
-	var isCapture = checkIfPawnCapture(pieceToMove, endSquare);
+	var isCapture = checkIfCapture(pieceToMove, endSquare);
 	if (isDoubleMove) {
 		console.log("double");
 		wasMoveMade = makeDoubleMove(pieceToMove, endSquare);
@@ -502,7 +504,7 @@ function checkIfLegalPawnCapture(pieceToMove, endSquare) {
 	return false;
 
 }
-function checkIfPawnCapture(pieceToMove, endSquare) {
+function checkIfCapture(pieceToMove, endSquare) {
 	startCol = parseInt(pieceToMove.square.spaceName[0]);
 	startRow = parseInt(pieceToMove.square.spaceName[1]);
 	endCol = parseInt(endSquare.spaceName[0]);
