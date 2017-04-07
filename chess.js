@@ -325,12 +325,94 @@ function movePiece(pieceToMove, endSquare) {
 			moveNum += 1;
 		}
 		return wasMoveMade;
+	} else if (pieceType == "b") {
+		wasMoveMade = moveBishop(pieceToMove, endSquare);
+		if (wasMoveMade) {
+			moveNum += 1;
+		}
+		return wasMoveMade;
+	} else if (pieceType == "r") {
+		wasMoveMade = moveRook(pieceToMove, endSquare);
+		if (wasMoveMade) {
+			moveNum += 1;
+		}
+		return wasMoveMade;
 	}
 	else {
 		//some other piece type
 		return false;
 	}
 
+}
+
+function moveRook(pieceToMove, endSquare) {
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
+	var wasMoveMade = false;
+
+	if (endCol == startCol || endRow == startRow) { //stays in either column or row
+		var pieceAtEndSquare = pieces[board[endCol][endRow].pieceId];
+		if (board[endCol][endRow].pieceId == empty) {
+			var pieceAtEndSquare = pieces[board[endCol][endRow].pieceId];
+			pieceToMove.square = board[endCol][endRow];
+			board[endCol][endRow].pieceId = pieceToMove.pieceId;
+			board[startCol][startRow].pieceId = empty;
+			if (pieceToMove.color == 'w') {
+				board[endCol][endRow].wOccupied = true;
+				board[startCol][startRow].wOccupied = false;
+			} else {
+				board[endCol][endRow].bOccupied = true;
+				board[startCol][startRow].bOccupied = false;
+			}
+		return true; // move was made successfully
+		}
+		if (pieceToMove.color == pieceAtEndSquare.color) { // space is occupied by friendly
+			return false;
+		}
+		if (pieceToMove.color != pieceAtEndSquare.color) { // legal capture
+			console.log("call cap");
+			makeCapture(pieceToMove, endSquare);
+			return true;
+		}
+	}
+	return false;
+}
+
+function moveBishop(pieceToMove, endSquare) {
+	startCol = parseInt(pieceToMove.square.spaceName[0]);
+	startRow = parseInt(pieceToMove.square.spaceName[1]);
+	endCol = parseInt(endSquare.spaceName[0]);
+	endRow = parseInt(endSquare.spaceName[1]);
+	var wasMoveMade = false;
+
+	if (Math.abs(endCol - startCol) == Math.abs(endRow - startRow)) { //moves on diagonal
+		var pieceAtEndSquare = pieces[board[endCol][endRow].pieceId];
+		if (board[endCol][endRow].pieceId == empty) {
+			var pieceAtEndSquare = pieces[board[endCol][endRow].pieceId];
+			pieceToMove.square = board[endCol][endRow];
+			board[endCol][endRow].pieceId = pieceToMove.pieceId;
+			board[startCol][startRow].pieceId = empty;
+			if (pieceToMove.color == 'w') {
+				board[endCol][endRow].wOccupied = true;
+				board[startCol][startRow].wOccupied = false;
+			} else {
+				board[endCol][endRow].bOccupied = true;
+				board[startCol][startRow].bOccupied = false;
+			}
+		return true; // move was made successfully
+		}
+		if (pieceToMove.color == pieceAtEndSquare.color) { // space is occupied by friendly
+			return false;
+		}
+		if (pieceToMove.color != pieceAtEndSquare.color) { // legal capture
+			console.log("call cap");
+			makeCapture(pieceToMove, endSquare);
+			return true;
+		}
+	}
+	return false;
 }
 
 function moveKnight(pieceToMove, endSquare) {
