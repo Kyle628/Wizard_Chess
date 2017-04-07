@@ -145,11 +145,15 @@ function centerPiece(piece, update){
 
 function init(){
 	canvas=document.getElementById('myCanvas');
+	canvas.style.width = '480px'; // here for retina
+	canvas.style.height = '320px'; // here for retina
 	ctx=canvas.getContext('2d');
+	ctx.scale(2,2);
 	drawboard();
 	canvas.onmousedown=onmousedown;
 	canvas.onmouseup=onmouseup;
 	canvas.onmousemove=onmousemove;
+
 
 
 	pieces=[
