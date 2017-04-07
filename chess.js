@@ -37,6 +37,8 @@ var pieces=[];
 
 var board=[];
 
+var blackPawnImg;
+
 for(i=0; i<columnCount; i++){
 	board[i]=[];
 	for(j=0; j<rowCount; j++){
@@ -149,10 +151,12 @@ function init(){
 	canvas.style.height = '320px'; // here for retina
 	ctx=canvas.getContext('2d');
 	ctx.scale(2,2);
-	drawboard();
+	drawboard()
 	canvas.onmousedown=onmousedown;
 	canvas.onmouseup=onmouseup;
 	canvas.onmousemove=onmousemove;
+
+
 
 
 
@@ -202,15 +206,33 @@ function init(){
 		} else { // piece is black
 			board[col][row].bOccupied = true;
 		}
-		pieces[i].drawPiece();
+		//pieces[i].drawPiece();
 	}
 
 
 
-	drawboard();
+/*drawboard();
+setTimeout(function(){
 	for (var i=0; i < 32; i++) {
 		pieces[i].drawPiece();
 	}
+}, 50);*/
+
+var promise = new Promise(function(resolve) {
+	var done = drawboard();
+
+	if(done) {
+		resolve();
+	}
+});
+
+promise.then(function() {
+	for (var i=0; i < 32; i++) {
+		pieces[i].drawPiece();
+	}
+});
+
+
 
 
 
@@ -258,7 +280,7 @@ function drawboard(){
 			ctx.closePath();
 		}
 	}
-	return;
+	return true;
 }
 
 
@@ -271,42 +293,11 @@ function drawboard(){
 			this.pieceId = pieceId;
 			this.captured = false;
 			this.firstMove;
+			this.sprite = getSprite(this.color, this.piece);
 			this.xCoord=square.x+(spaceWidth/2-8);
 			this.yCoord=square.y+(spaceHeight/2-8);
 				this.drawPiece = function(){
-					if (this.color == 'w') {
-						// need to get rid of these magic numbers don't really know what i am doing
-						if (this.piece == 'p') {
-							loadImage("img/whitepawn.png", this.xCoord-4, this.yCoord-3);
-						} else if (this.piece == 'b') {
-							loadImage("img/whitebishop.png", this.xCoord-4, this.yCoord-3);
-						} else if (this.piece == 'kn') {
-							loadImage("img/whiteknight.png", this.xCoord-4, this.yCoord-3);
-						} else if (this.piece == 'r') {
-							loadImage("img/whiterook.png", this.xCoord-4, this.yCoord-3);
-						} else if (this.piece == 'k') {
-							loadImage("img/whiteking.png", this.xCoord-4, this.yCoord-3);
-						} else if (this.piece == 'q') {
-							loadImage("img/whitequeen.png", this.xCoord-4, this.yCoord-3);
-						}
-					} else if (this.color == 'b') { // black piece
-						// need to get rid of these magic numbers don't really know what i am doing
-						if (this.piece == 'p') {
-							loadImage("img/blackpawn.png", Math.floor(this.xCoord-4), Math.floor(this.yCoord-3));
-						} else if (this.piece == 'b') {
-							loadImage("img/blackbishop.png", this.xCoord-4, this.yCoord-3);
-						} else if (this.piece == 'kn') {
-							loadImage("img/blackknight.png", Math.floor(this.xCoord-4), Math.floor(this.yCoord-3));
-						} else if (this.piece == 'r') {
-							loadImage("img/blackrook.png", this.xCoord-4, this.yCoord-3);
-						} else if (this.piece == 'k') {
-							loadImage("img/blackking.png", this.xCoord-4, this.yCoord-3);
-						} else if (this.piece == 'q') {
-							loadImage("img/blackqueen.png", this.xCoord-4, this.yCoord-3);
-						}
-					} else {
-						;
-					}
+					ctx.drawImage(this.sprite, this.xCoord-4, this.yCoord-3, 25, 25);
 
 
 					/*
@@ -335,16 +326,26 @@ function drawboard(){
 				}
 		}
 
-		function loadImage( src, x, y) {
+function getSprite(color, type) {
+	img = new Image();
+	img.src = "img/" + color + type + ".png";
+	img.onload = function() {
+		ctx.imageSmoothingEnabled = false;
+	}
+	return img;
+}
 
-		    var imageObj = new Image();
-		    imageObj.src = src;
-		    imageObj.onload = function() {
-				ctx.imageSmoothingEnabled = false;
-		        ctx.drawImage(imageObj, x, y, 25, 25);
-		    };
 
-		}
+function loadImage( src, x, y) {
+
+    var imageObj = new Image();
+    imageObj.src = src;
+    imageObj.onload = function() {
+		ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(imageObj, x, y, 25, 25);
+    };
+
+}
 
 // takes a piece object, and a square id as a string, returns true if move was made
 function movePiece(pieceToMove, endSquare) {
