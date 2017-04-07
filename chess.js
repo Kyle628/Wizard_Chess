@@ -218,32 +218,9 @@ setTimeout(function(){
 }, 50);
 
 
+} // end init()
 
 
-
-
-
-
-	/*for(i=0; i<numPieces; i++){
-=======
-	for(i=0; i<numPieces; i++){
->>>>>>> origin/Luke_Branch
-		if(i<8){
-			pieces[i]=new piece('b','r',board[i][0], i);
-		}
-		else if(i<16){
-			pieces[i]=new piece('b','r',board[i-8][1], i);
-		}
-		else if(i<24){
-			pieces[i]=new piece('w','r',board[i-16][6], i);
-		}
-		else{
-			pieces[i]=new piece('w','r',board[i-24][7], i);
-		}
-		pieces[i].drawPiece();
-	}*/
-
-}
 
 function drawboard(){
 	for(i=0; i<columnCount; i++){
@@ -287,6 +264,8 @@ function drawboard(){
 					ctx.drawImage(this.sprite, this.xCoord-4, this.yCoord-3, 25, 25);
 				}
 		}
+
+
 
 function getSprite(color, type) {
 	img = new Image();
@@ -874,33 +853,3 @@ function checkIfSingleMove(pieceToMove, endSquare) {
 	}
 	return false;
 }
-/*
-function drawPieces(pieces){
-	for(i=0;i<8;i++){
-		for(j=0;j<2;j++){
-			ctx.beginPath();
-			ctx.arc((i*spaceWidth)+spaceOffsetLeft+(spaceWidth/2),(j*spaceHeight)+spaceOffsetTop+(spaceHeight/2),15,0,2*Math.PI,false);
-			ctx.fillStyle='#ffffff';
-			ctx.fill();
-			ctx.closePath();
-		}
-	}
-
-}
-*/
-	this.drawPiece=function(){
-		ctx.beginPath();
-
-		ctx.rect(this.xCoord,this.yCoord,16,16);
-		ctx.fillStyle="#ffffff";
-		ctx.fill();
-
-		/*
-		ctx.fillStyle = 'rgba(0,0,0,1)';
-		ctx.strokeStyle = "#F00";
-		ctx.font = "bold 15pt Arial";
-		ctx.globalCompositeOperation = 'destination-out';
-		ctx.fillText('R', this.xCoord, this.yCoord);
-		*/
-		ctx.closePath();
-	}
