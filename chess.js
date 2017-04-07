@@ -258,89 +258,89 @@ function drawboard(){
 }
 
 
-function piece(color, piece, square, pieceId){
-	this.dragging=false;
-	this.color=color;
-	this.piece=piece;
-	this.square=square;
-	this.moveCount=0;
-	this.pieceId = pieceId;
-	this.captured = false;
-	this.firstMove;
-	this.xCoord=square.x+(spaceWidth/2-8);
-	this.yCoord=square.y+(spaceHeight/2-8);
-		this.drawPiece = function(){
-			if (this.color == 'w') {
-				// need to get rid of these magic numbers don't really know what i am doing
-				if (this.piece == 'p') {
-					loadImage("img/whitepawn.png", this.xCoord-4, this.yCoord-3);
-				} else if (this.piece == 'b') {
-					loadImage("img/whitebishop.png", this.xCoord-4, this.yCoord-3);
-				} else if (this.piece == 'kn') {
-					loadImage("img/whiteknight.png", this.xCoord-4, this.yCoord-3);
-				} else if (this.piece == 'r') {
-					loadImage("img/whiterook.png", this.xCoord-4, this.yCoord-3);
-				} else if (this.piece == 'k') {
-					loadImage("img/whiteking.png", this.xCoord-4, this.yCoord-3);
-				} else if (this.piece == 'q') {
-					loadImage("img/whitequeen.png", this.xCoord-4, this.yCoord-3);
+		function piece(color, piece, square, pieceId){
+			this.dragging=false;
+			this.color=color;
+			this.piece=piece;
+			this.square=square;
+			this.moveCount=0;
+			this.pieceId = pieceId;
+			this.captured = false;
+			this.firstMove;
+			this.xCoord=square.x+(spaceWidth/2-8);
+			this.yCoord=square.y+(spaceHeight/2-8);
+				this.drawPiece = function(){
+					if (this.color == 'w') {
+						// need to get rid of these magic numbers don't really know what i am doing
+						if (this.piece == 'p') {
+							loadImage("img/whitepawn.png", this.xCoord-4, this.yCoord-3);
+						} else if (this.piece == 'b') {
+							loadImage("img/whitebishop.png", this.xCoord-4, this.yCoord-3);
+						} else if (this.piece == 'kn') {
+							loadImage("img/whiteknight.png", this.xCoord-4, this.yCoord-3);
+						} else if (this.piece == 'r') {
+							loadImage("img/whiterook.png", this.xCoord-4, this.yCoord-3);
+						} else if (this.piece == 'k') {
+							loadImage("img/whiteking.png", this.xCoord-4, this.yCoord-3);
+						} else if (this.piece == 'q') {
+							loadImage("img/whitequeen.png", this.xCoord-4, this.yCoord-3);
+						}
+					} else if (this.color == 'b') { // black piece
+						// need to get rid of these magic numbers don't really know what i am doing
+						if (this.piece == 'p') {
+							loadImage("img/blackpawn.png", Math.floor(this.xCoord-4), Math.floor(this.yCoord-3));
+						} else if (this.piece == 'b') {
+							loadImage("img/blackbishop.png", this.xCoord-4, this.yCoord-3);
+						} else if (this.piece == 'kn') {
+							loadImage("img/blackknight.png", Math.floor(this.xCoord-4), Math.floor(this.yCoord-3));
+						} else if (this.piece == 'r') {
+							loadImage("img/blackrook.png", this.xCoord-4, this.yCoord-3);
+						} else if (this.piece == 'k') {
+							loadImage("img/blackking.png", this.xCoord-4, this.yCoord-3);
+						} else if (this.piece == 'q') {
+							loadImage("img/blackqueen.png", this.xCoord-4, this.yCoord-3);
+						}
+					} else {
+						;
+					}
+
+
+					/*
+					ctx.beginPath();
+
+					ctx.rect(this.xCoord,this.yCoord,16,16);
+					if (this.color == 'w') {
+						ctx.fillStyle="#ffffff";
+					} else {
+						ctx.fillStyle="#636262";
+					}
+
+					ctx.fill();
+
+
+					/*
+					ctx.fillStyle = 'rgba(0,0,0,1)';
+					ctx.strokeStyle = "#F00";
+					ctx.font = "bold 15pt Arial";
+					ctx.globalCompositeOperation = 'destination-out';
+					ctx.fillText('R', this.xCoord, this.yCoord);
+					*/
+					//ctx.closePath();
+
+
 				}
-			} else if (this.color == 'b') { // black piece
-				// need to get rid of these magic numbers don't really know what i am doing
-				if (this.piece == 'p') {
-					loadImage("img/blackpawn.png", this.xCoord-4, this.yCoord-3);
-				} else if (this.piece == 'b') {
-					loadImage("img/blackbishop.png", this.xCoord-4, this.yCoord-3);
-				} else if (this.piece == 'kn') {
-					loadImage("img/blackknight.png", this.xCoord-4, this.yCoord-3);
-				} else if (this.piece == 'r') {
-					loadImage("img/blackrook.png", this.xCoord-4, this.yCoord-3);
-				} else if (this.piece == 'k') {
-					loadImage("img/blackking.png", this.xCoord-4, this.yCoord-3);
-				} else if (this.piece == 'q') {
-					loadImage("img/blackqueen.png", this.xCoord-4, this.yCoord-3);
-				}
-			} else {
-				;
-			}
+		}
 
+		function loadImage( src, x, y) {
 
-			/*
-			ctx.beginPath();
-
-			ctx.rect(this.xCoord,this.yCoord,16,16);
-			if (this.color == 'w') {
-				ctx.fillStyle="#ffffff";
-			} else {
-				ctx.fillStyle="#636262";
-			}
-
-			ctx.fill();
-
-
-			/*
-			ctx.fillStyle = 'rgba(0,0,0,1)';
-			ctx.strokeStyle = "#F00";
-			ctx.font = "bold 15pt Arial";
-			ctx.globalCompositeOperation = 'destination-out';
-			ctx.fillText('R', this.xCoord, this.yCoord);
-			*/
-			//ctx.closePath();
-
+		    var imageObj = new Image();
+		    imageObj.src = src;
+		    imageObj.onload = function() {
+				ctx.imageSmoothingEnabled = false;
+		        ctx.drawImage(imageObj, x, y, 25, 25);
+		    };
 
 		}
-}
-
-function loadImage( src, x, y) {
-
-    var imageObj = new Image();
-    imageObj.src = src;
-    imageObj.onload = function() {
-		ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(imageObj, x, y, 25, 25);
-    };
-
-}
 
 // takes a piece object, and a square id as a string, returns true if move was made
 function movePiece(pieceToMove, endSquare) {
